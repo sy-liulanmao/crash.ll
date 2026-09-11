@@ -1,0 +1,70 @@
+proxy-providers:
+  provider1:
+    type: http
+    url: ""
+    path: "./providers/provider1.yaml"
+    interval: 43200
+    health-check:
+      enable: true
+      lazy: true
+      url: "https://www.gstatic.com/generate_204"
+      interval: 180
+    header:
+      User-Agent: ["clash.meta"]
+    override:
+      udp: true
+      skip-cert-verify: true
+    filter: ""
+    exclude-filter: ""
+
+proxy-groups:
+  - {name: 🚀 节点选择, type: select, proxies: [provider1], include-all: true}
+  - {name: 🤖 ai, type: select, proxies: [provider1], include-all: true, filter: "(?i)(日本|东京|大阪|Japan|Tokyo|Osaka|JP|新加坡|Singapore|SG|台湾|Taiwan|台北|Taipei|TW|美国|United States|America|US|USA|韩国|Korea|Seoul|KR)"}
+  - {name: 📺 YouTube, type: select, proxies: [provider1], include-all: true}
+  - {name: 🎯 本地直连, type: select, proxies: [DIRECT, 🚀 节点选择]}
+
+rule-providers:
+  cn:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/cn.mrs
+    url: "https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/cn.mrs"
+    interval: 86400
+
+  privateip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    path: ./ruleset/privateip.mrs
+    url: "https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/privateip.mrs"
+    interval: 86400
+
+  cnip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    path: ./ruleset/cnip.mrs
+    url: "https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/cnip.mrs"
+    interval: 86400
+
+rules:
+  # ai
+  - DOMAIN-KEYWORD,openai,🤖 ai
+  - DOMAIN-KEYWORD,chatgpt,🤖 ai
+  - DOMAIN-KEYWORD,gemini,🤖 ai
+  - DOMAIN-KEYWORD,googleai,🤖 ai
+
+  # youtube
+  - DOMAIN-KEYWORD,youtube,📺 YouTube
+  - DOMAIN-KEYWORD,youtu,📺 YouTube
+
+  # 本地+远程控制集
+  - DOMAIN-KEYWORD,lyezi.xyz,DIRECT
+  - DOMAIN-KEYWORD,apple,DIRECT
+  - DOMAIN-KEYWORD,microsoft,DIRECT
+
+  - RULE-SET,privateip,🎯 本地直连
+  - RULE-SET,cn,🎯 本地直连
+  - RULE-SET,cnip,🎯 本地直连
+  - MATCH,🚀 节点选择
