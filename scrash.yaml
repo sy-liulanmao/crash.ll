@@ -21,8 +21,6 @@ proxy-groups:
   - {name: 🚀 节点选择, type: select, proxies: [provider1], include-all: true}
   - {name: 🤖 ai, type: select, proxies: [provider1], include-all: true, filter: "(?i)(日本|东京|大阪|Japan|Tokyo|Osaka|JP|新加坡|Singapore|SG|台湾|Taiwan|台北|Taipei|TW|美国|United States|America|US|USA|韩国|Korea|Seoul|KR)"}
   - {name: 📺 YouTube, type: select, proxies: [provider1], include-all: true}
-  - {name: 🎯 本地直连, type: select, proxies: [DIRECT, 🚀 节点选择]}
-
 rule-providers:
   cn:
     type: http
@@ -64,7 +62,7 @@ rules:
   - DOMAIN-KEYWORD,apple,DIRECT
   - DOMAIN-KEYWORD,microsoft,DIRECT
 
-  - RULE-SET,privateip,🎯 本地直连
-  - RULE-SET,cn,🎯 本地直连
-  - RULE-SET,cnip,🎯 本地直连
+  - RULE-SET,privateip,DIRECT
+  - RULE-SET,cn,DIRECT
+  - RULE-SET,cnip,DIRECT
   - MATCH,🚀 节点选择
