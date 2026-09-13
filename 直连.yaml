@@ -1,0 +1,97 @@
+proxy-providers:
+  niva:
+    type: http
+    url: "https://niva.lol/s/8a68732d7bbfd7cbb6a00ad9480302b2"
+    path: "./providers/niva.yaml"
+    interval: 43200
+    health-check:
+      enable: true
+      lazy: true
+      url: "https://www.gstatic.com/generate_204"
+      interval: 180
+    header:
+      User-Agent: ["clash.meta"]
+    override:
+      udp: true
+      skip-cert-verify: true
+    filter: ""
+    exclude-filter: ""
+  linjiajia:
+    type: http
+    url: "https://520.linjiajia.top/s/c0dac7a25c0a5ca85fe34e4e9f883d59"
+    path: "./providers/linjiajia.yaml"
+    interval: 43200
+    health-check:
+      enable: true
+      lazy: true
+      url: "https://www.gstatic.com/generate_204"
+      interval: 180
+    header:
+      User-Agent: ["clash.meta"]
+    override:
+      udp: true
+      skip-cert-verify: true
+    filter: ""
+    exclude-filter: ""
+  暗月:
+    type: http
+    url: "https://subscribe.xn--9iq350dwjao46n.org/chisato-api/d3c96cf72f6f82bb77fe3c4c1b01ac7c"
+    path: "./providers/暗月.yaml"
+    interval: 43200
+    health-check:
+      enable: true
+      lazy: true
+      url: "https://www.gstatic.com/generate_204"
+      interval: 180
+    header:
+      User-Agent: ["clash.meta"]
+    override:
+      udp: true
+      skip-cert-verify: true
+    filter: ""
+    exclude-filter: ""
+proxy-groups:
+  - {name: 🚀 节点选择, type: select, proxies: [niva, linjiajia, 暗月], include-all: true}
+  - {name: niva, type: select, use: [niva]}
+  - {name: linjiajia, type: select, use: [linjiajia]}
+  - {name: 暗月, type: select, use: [暗月]}
+  - {name: 🤖 ai, type: select, proxies: [niva, linjiajia, 暗月], include-all: true, filter: "(?i)(日本|东京|大阪|Japan|Tokyo|Osaka|JP|新加坡|Singapore|SG|台湾|Taiwan|台北|Taipei|TW|美国|United States|America|US|USA|韩国|Korea|Seoul|KR)"}
+  - {name: 📺 YouTube, type: select, proxies: [niva, linjiajia, 暗月], include-all: true}
+  - {name: 🎯 本地直连, type: select, proxies: [DIRECT, 🚀 节点选择]}
+rule-providers:
+  cn:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/cn.mrs
+    url: "https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/cn.mrs"
+    interval: 86400
+  privateip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    path: ./ruleset/privateip.mrs
+    url: "https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/privateip.mrs"
+    interval: 86400
+  cnip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    path: ./ruleset/cnip.mrs
+    url: "https://testingcf.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/cnip.mrs"
+    interval: 86400
+rules:
+  #AI
+  - DOMAIN-KEYWORD,openai,🤖 ai
+  - DOMAIN-KEYWORD,chatgpt,🤖 ai
+  - DOMAIN-KEYWORD,gemini,🤖 ai
+  - DOMAIN-KEYWORD,googleai,🤖 ai
+  #youtube
+  - DOMAIN-KEYWORD,youtube,📺 YouTube
+  - DOMAIN-KEYWORD,youtu,📺 YouTube
+  #本地+远程订阅规则集
+  - DOMAIN-KEYWORD,lyezi.xyz,🎯 本地直连
+  - RULE-SET,privateip,🎯 本地直连
+  - RULE-SET,cn,🎯 本地直连
+  - RULE-SET,cnip,🎯 本地直连
+  - MATCH,🚀 节点选择
